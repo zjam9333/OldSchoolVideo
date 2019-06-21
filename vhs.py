@@ -51,7 +51,7 @@ def doWithVideo(src, output = 'out.mp4'):
     framecount = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     print('total frame: {}'.format(framecount))
 
-    videoheight = int(720)
+    videoheight = int(480)
     videowidth = int(float(videoheight) / float(height) * float(width))
     videosize = (videowidth, videoheight)
 
