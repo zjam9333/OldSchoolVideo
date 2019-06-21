@@ -9,7 +9,8 @@ import argparse
 def VHSImage(src):
     copy = src.copy()
     # blur
-    copy = cv2.GaussianBlur(copy, (3, 3), 0)
+    blursize = 3
+    copy = cv2.GaussianBlur(copy, (blursize, blursize), 0)
     # sharpen 
     kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     copy = cv2.filter2D(copy, -1, kernel)
@@ -104,15 +105,19 @@ def doWithVideo(src, output = 'out.mp4'):
 
 def doWithImage(src, output = 'out.jpg'):
     print("progressing")
-    img = cv2.imread('test.jpg')
+    img = cv2.imread(src)
     vhs = VHSImage(img)
-    cv2.imwrite(output, vhs)
+    # cv2.imwrite(output, vhs)
+    cv2.imshow('output', vhs)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     print("done")
 
 if __name__ == "__main__":
-    # doWithImage('test.jpg')
+    # doWithImage('test2.jpg')
+    
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", type = str, required = False, default = '/Users/dabby/Desktop/视频/93539180-1-80.mp4')
+    parser.add_argument("-i", "--input", type = str, required = False, default = '/Users/dabby/Desktop/input.mp4')
     parser.add_argument("-o", "--output", type = str, default = "/Users/dabby/Desktop/output.mp4")
     args = vars(parser.parse_args())
 
