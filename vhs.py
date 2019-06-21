@@ -21,27 +21,31 @@ def VHSImage(src):
     copy = cv2.cvtColor(HSV, cv2.COLOR_HSV2BGR)
 
     # translate color's channel
-    cols = copy.shape[1]
     move = 1
+    cols = copy.shape[1]
     # pick one channel to translate, 0:B 1:G 2:R
     toLeft = copy[:, :, 0]
     toLeft[:, :cols - move] = toLeft[:, move:]
+
     toRight = copy[:, :, 2]
     toRight[:, move:] = toRight[:, :cols - move]
+
     rows = copy.shape[0]
     toUp = copy[:, :, 1]
     toUp[:rows - move:] = toUp[move:, :]
 
     # make more yellow
     B = copy[:, :, 0]
-    B[:, :] = B[:, :] * 0.9
+    B[:, :] = B[:, :] * 0.94
     G = copy[:, :, 1]
-    G[:, :] = G[:, :] * 0.95
-
-    black = np.zeros_like(copy)
-    copy = cv2.bitwise_or(copy, black)
+    G[:, :] = G[:, :] * 0.99
 
     return copy
+
+    # black = np.zeros_like(copy)
+    # copy = cv2.bitwise_or(copy, black)
+
+    # return copy
 
 def doWithVideo(src, output = 'out.mp4'):
     cap = cv2.VideoCapture(src)
