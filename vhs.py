@@ -48,7 +48,7 @@ def VHSImage(src):
 
     # return copy
 
-def doWithVideo(src, output = 'out.mp4'):
+def doWithVideo(src, output = 'out.mp4', codewith264 = True):
     cap = cv2.VideoCapture(src)
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -56,13 +56,17 @@ def doWithVideo(src, output = 'out.mp4'):
     framecount = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     print('total frame: {}'.format(framecount))
 
-    videoheight = int(480)
+    videoheight = int(720)
     videowidth = int(float(videoheight) / float(height) * float(width))
     videosize = (videowidth, videoheight)
+    if videoheight > videowidth:
+        videowidth = videoheight
+        videoheight = int(float(videowidth) / float(width) * float(height))
+        videosize = (videowidth, videoheight)
 
     cachePrefixName = time.strftime('%Y%m%d_%H%M%S')
     cacheVideoName = "{}.cachevideo.mp4".format(cachePrefixName)
-    cacheAudioName = "{}.cacheaudio.mp3".format(cachePrefixName)
+    # cacheAudioName = "{}.cacheaudio.mp3".format(cachePrefixName)
 
     cc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(cacheVideoName, cc, fps, videosize)
@@ -86,19 +90,33 @@ def doWithVideo(src, output = 'out.mp4'):
     out.release()
     print('finish progress')
 
+    print('remix audio and video')
+    # os.system("ffmpeg -i {} -f mp3 -vn {}".format(src, cacheAudioName))
+    
+    # ffmpeg -i INPUT_Video -i INPUT_Audio -map 0:v -map 1:a -c:v copy -c:a copy output.mp4
+    codeVideoMethod = 'copy'
+    if codewith264 :
+        codeVideoMethod = 'libx264'
+    os.system("ffmpeg -i {} -i {} -map 0:v -map 1:a -c:v {} -c:a copy {}".format(cacheVideoName, src, codeVideoMethod, output))
+    print("cleaning cache")
+    os.system("rm -rf {}".format(cacheVideoName))
+
     # ffmpeg -i INPUT_VIDEO -f mp3 -vn OUTPUT_AUDIO
     # ffmpeg -i INPUT_VIDEO -i INPUT_AUDIO -c:v copy OUTPUT_VIDEO
-    print('remix audio and video')
-    os.system("ffmpeg -i {} -f mp3 -vn {}".format(src, cacheAudioName))
+
+    # old
+
     # check audio file if exists
-    if os.path.exists(cacheAudioName):
-        # remix audio and video
-        os.system("ffmpeg -i {} -i {} -c:v copy {}".format(cacheVideoName, cacheAudioName, output))
-        print("cleaning cache")
-        os.system("rm -rf {} {}".format(cacheAudioName, cacheVideoName))
-    else :
-        # rename this no-audio video
-        os.system("mv {} {}".format(cacheVideoName, output))
+    # if os.path.exists(cacheAudioName):
+    #     # remix audio and video
+    #     os.system("ffmpeg -i {} -i {} -c:v {} {}".format(cacheVideoName, cacheAudioName, codeVideoMethod, output))
+    #     print("cleaning cache")
+    #     os.system("rm -rf {} {}".format(cacheAudioName, cacheVideoName))
+    # else :
+    #     # rename this no-audio video
+    #     if code
+    #     os.system("mv {} {}".format(cacheVideoName, output))
+
     print("finish remix")
     print("done")
 
@@ -106,6 +124,11 @@ def doWithVideo(src, output = 'out.mp4'):
 def doWithImage(src, output = 'out.jpg'):
     print("progressing")
     img = cv2.imread(src)
+    row = img.shape[0]
+    col = img.shape[1]
+    width = 360
+    height = int(width / col * row)
+    img = cv2.resize(img, (width, height))
     vhs = VHSImage(img)
     # cv2.imwrite(output, vhs)
     cv2.imshow('output', vhs)
@@ -114,11 +137,14 @@ def doWithImage(src, output = 'out.jpg'):
     print("done")
 
 if __name__ == "__main__":
-    # doWithImage('test2.jpg')
+    # doWithImage('test.jpg')
     
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type = str, required = False, default = '/Users/dabby/Desktop/input.mp4')
+    parser.add_argument("-c", "--code264", type = int, required = False, default = 1)
     parser.add_argument("-o", "--output", type = str, default = "/Users/dabby/Desktop/output.mp4")
     args = vars(parser.parse_args())
 
-    doWithVideo(args["input"], output = args["output"])
+    print(args)
+
+    doWithVideo(args["input"], output = args["output"], codewith264 = (args["code264"] > 0))
