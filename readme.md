@@ -7,3 +7,6 @@
 
 ### output
 ![output image](out.jpg)
+
+### interlace
+![interlace demo](interlace.jpg)
