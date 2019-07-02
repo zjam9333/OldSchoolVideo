@@ -59,11 +59,10 @@ def VXStyle(src):
     S = HSV[:, :, 1]
     S[:, :] = S[:, :] * 0.65
     # make brighter
-    Vfloat = HSV[:, :, 2].astype(np.float)
+    Vfloat = HSV[:, :, 2].astype(np.int)
     Vfloat[:] = Vfloat[:] * 1.5
-    Voverflowindexes = np.where(Vfloat > 255) # return indexes ...
-    Vfloat[Voverflowindexes] = 255
-    HSV[:, :, 2] = Vfloat.reshape(S.shape)
+    Vfloat[Vfloat > 255] = 255
+    HSV[:, :, 2] = Vfloat
 
     copy = cv2.cvtColor(HSV, cv2.COLOR_HSV2BGR)
 
@@ -176,9 +175,11 @@ def doWithImage(src, output = 'out.jpg'):
 if __name__ == "__main__":
     # doWithImage('test.jpg')
     
+    username = "jam"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", type = str, default = '/Users/dabby/Desktop/input.mp4')
-    parser.add_argument("-o", "--output", type = str, default = "/Users/dabby/Desktop/output.mp4")
+    parser.add_argument("-i", "--input", type = str, default = '/Users/{}/Desktop/input.mp4'.format(username))
+    parser.add_argument("-o", "--output", type = str, default = "/Users/{}/Desktop/output.mp4".format(username))
     parser.add_argument("-height", "--perferheight", type = int, default = 544)
     parser.add_argument("-fps", "--framepersecond", type = int, default = 0)
     parser.add_argument("-x264", "--encode264", type = int, default = 1)
