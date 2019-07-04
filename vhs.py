@@ -180,7 +180,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type = str, default = '/Users/{}/Desktop/input.mp4'.format(username))
     parser.add_argument("-o", "--output", type = str, default = "/Users/{}/Desktop/output.mp4".format(username))
-    parser.add_argument("-height", "--perferheight", type = int, default = 544)
+    parser.add_argument("-height", "--perferheight", type = int, default = 480)
     parser.add_argument("-fps", "--framepersecond", type = int, default = 0)
     parser.add_argument("-x264", "--encode264", type = int, default = 1)
     parser.add_argument("-interlaced", "--interlaced", type = int, default = 1)
