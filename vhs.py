@@ -7,46 +7,55 @@ import time
 import argparse
 from tqdm import tqdm
 
+import mylut
+
+# lut
+lut = mylut.MYLUT(lutpath='lut/lookup_my.png')
+# sharpen
+sharpkernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+
 def purpleEdge(src, size = 1):
     copy = src.copy()
     # [BGR] [012]
     # 2, 0:2 cyan red (tiktok)
     # 1, 0::2 purple green (normal)
     # 0, 1: yello blue (unknown)
+
+    # scaled purple
+    # channel = copy[:, :, 1]
+    # mov = size
+    # newchannel = cv2.resize(channel, (channel.shape[1] + mov * 2, channel.shape[0] + mov * 2))
+    # channel[:, :] = newchannel[mov:-mov, mov:-mov]
+
+    # simple 
     channel = copy[:, :, 1]
-    mov = size
-    newchannel = cv2.resize(channel, (channel.shape[1] + mov * 2, channel.shape[0] + mov * 2))
-    channel[:, :] = newchannel[mov:-mov, mov:-mov]
+    channel[:-size, :-size] = channel[size:, size:]
     return copy
 
-# sharpen
-sharpkernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
 def MyStyle(src):
     copy = src.copy()
 
-    # blur
-    blursize = 3
-    copy = cv2.GaussianBlur(copy, (blursize, blursize), 0)
-
-    # # make more yellow
-    B = copy[:, :, 0]
-    B[:, :] = B[:, :] * 0.95
-
-    # # change Saturation
-    HSV = cv2.cvtColor(copy, cv2.COLOR_BGR2HSV)
-    S = HSV[:, :, 1]
-    HSV[:, :, 1] = S * 0.8
-    copy = cv2.cvtColor(HSV, cv2.COLOR_HSV2BGR)
-
     # translate color's channel
     copy = purpleEdge(copy, size = 2)
+    # blur
+    blursize = 7
+    copy = cv2.GaussianBlur(copy, (blursize, blursize), 0)
+
+    # make more yellow
+    # B = copy[:, :, 0]
+    # B[:, :] = B[:, :] * 0.95
     # sharpen 
     copy = cv2.filter2D(copy, -1, sharpkernel)
+
+    # colors 
+    # lut
+    copy = lut.imageInLut(copy)
+
     return copy
 
 def HandleImage(src):
-    return MyStyle(src) 
-    # return purpleEdge(src)  
+    res = MyStyle(src)
+    return res
 
 def doWithVideo(src, output = 'out.mp4', encodewith264 = True, framepersecond = 30, interlaced = True, perferheight = 720):
     cap = cv2.VideoCapture(src)
@@ -137,26 +146,20 @@ def doWithVideo(src, output = 'out.mp4', encodewith264 = True, framepersecond = 
 def doWithImage(src, output = 'out.jpg'):
     print("progressing")
     img = cv2.imread(src)
-    # row = img.shape[0]
-    # col = img.shape[1]
-    # width = 540
-    # height = int(float(width) / col * row)
-    # img = cv2.resize(img, (width, height))
     vhs = HandleImage(img)
-    # cv2.imwrite(output, vhs)
     cv2.imshow('output', vhs)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     print("done")
 
 if __name__ == "__main__":
-    # doWithImage('test.jpg')
-    # pass
+    doWithImage('test.jpg')
+    pass
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/test.mp4')
-    parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/C0105.out.mov')
-    parser.add_argument("-height", "--perferheight", type = int, default = 720)
+    parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/C0314.MP4')
+    parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out2.mov')
+    parser.add_argument("-height", "--perferheight", type = int, default = 480)
     parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
     parser.add_argument("-x264", "--encode264", type = int, default = 1)
     parser.add_argument("-interlaced", "--interlaced", type = int, default = 0)
