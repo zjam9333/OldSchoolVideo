@@ -37,11 +37,18 @@ class MYLUT:
         # cv2.waitKey(0)
 
     def imageInLut(self, src):
-        img = src.reshape(-1, 3)
-        for iy in range(img.shape[0]):
-            b,g,r = img[iy]
-            img[iy] = self.lut[b, g, r]
-        return img.reshape(src.shape)
+        arr = src.copy()
+        bs = arr[:, :, 0]
+        gs = arr[:, :, 1]
+        rs = arr[:, :, 2]
+        arr[:, :] = self.lut[bs, gs, rs] # wow this runs much faster!!
+        return arr
+
+        # img = src.reshape(-1, 3)
+        # for iy in range(img.shape[0]):
+        #     b,g,r = img[iy]
+        #     img[iy] = self.lut[b, g, r]
+        # return img.reshape(src.shape)
 
 if __name__ == "__main__":
     img = cv2.imread('test.jpg')

@@ -36,9 +36,9 @@ def MyStyle(src):
     copy = src.copy()
 
     # translate color's channel
-    copy = purpleEdge(copy, size = 2)
+    copy = purpleEdge(copy, size = 1)
     # blur
-    blursize = 7
+    blursize = 5
     copy = cv2.GaussianBlur(copy, (blursize, blursize), 0)
 
     # make more yellow
@@ -153,13 +153,13 @@ def doWithImage(src, output = 'out.jpg'):
     print("done")
 
 if __name__ == "__main__":
-    doWithImage('test.jpg')
-    pass
+    # doWithImage('test.jpg')
+    # pass
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/C0314.MP4')
+    parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/IMG_0360.MOV')
     parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out2.mov')
-    parser.add_argument("-height", "--perferheight", type = int, default = 480)
+    parser.add_argument("-height", "--perferheight", type = int, default = 720)
     parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
     parser.add_argument("-x264", "--encode264", type = int, default = 1)
     parser.add_argument("-interlaced", "--interlaced", type = int, default = 0)
