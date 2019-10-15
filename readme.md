@@ -4,7 +4,7 @@
 
 ## 需要opencv-python、ffmpeg
 
-## python vhs.py -i input.mp4 -o output.mp4
+## python oldschoolvideo.py -i input.mp4 -o output.mp4
 
 ### input 
 ![input image](test.jpg)
