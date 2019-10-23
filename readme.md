@@ -10,4 +10,4 @@
 ![input image](test.jpg)
 
 ### output
-![output my style](output2.jpg)
+![output lookup_0_demo](output2.jpg)
