@@ -7,12 +7,14 @@ import time
 import argparse
 from tqdm import tqdm
 
+defaultlutpath = 'lut/lookup_kodak_5218_kodak_2395.png'
+
 class MYLUT: # my lut filter
     '''
     originlut.shape
     (512, 512, 3) [0, 63]
     '''
-    def __init__(self, lutpath='lut/lookup_my.png'):
+    def __init__(self, lutpath=defaultlutpath):
         self.loaded = True
         if not os.path.exists(lutpath):
             print('Can not load lut file: {}, try to search in .py path'.format(lutpath))
@@ -52,7 +54,7 @@ class MYLUT: # my lut filter
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/C0102.MP4')
 parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out2.mov')
-parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_my.png')
+parser.add_argument("-lut", "--lutpath", type = str, default = defaultlutpath)
 parser.add_argument("-height", "--perferheight", type = int, default = 1080)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 0)
@@ -183,20 +185,26 @@ def progressImage(src, output = 'out.jpg'):
     print("Done")
 
 def testLut():
-    img = cv2.imread('test.jpg')
-    print('Init', time.time())
-    lut = MYLUT()
-    print('Start', time.time())
-    img = lut.imageInLut(img)
-    print('Finish', time.time())
-    # cv2.imwrite(output, vhs)
-    cv2.imshow('img', img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    testimg = cv2.imread('/Users/zjj/Downloads/照片/ZJJ03460.JPG')
+    testimg = cv2.resize(testimg, (600, 400))
+    fileinlutdir = os.listdir('lut')
+    fileinlutdir = sorted(fileinlutdir)
+    for filename in fileinlutdir:
+        if filename.endswith('.png') and filename.startswith('lookup'):
+            lutpath = 'lut/' + filename
+            print('Init', time.time())
+            lut = MYLUT(lutpath)
+            print('Start', time.time())
+            img = lut.imageInLut(testimg)
+            print('Finish', time.time())
+            cv2.imshow(filename, img)
+            cv2.waitKey(0)
+            cv2.destroyWindow(filename)
     print("Done")
 
 if __name__ == "__main__":
-    # progressImage('test.jpg')
+    # testLut()
     # exit()
-
+    progressImage('test.jpg')
+    exit()
     progressVideo(userArgs["input"], output = userArgs["output"], encodewith264 = userArgs["encode264"], perferheight = userArgs["perferheight"], framepersecond = userArgs["framepersecond"], interlaced = userArgs["interlaced"])
