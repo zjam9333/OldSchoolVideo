@@ -7,7 +7,7 @@ import time
 import argparse
 from tqdm import tqdm
 
-defaultlutpath = 'lut/lookup_kodak_5218_kodak_2395.png'
+defaultlutpath = 'lut/lookup_vx.png'
 
 class MYLUT: # my lut filter
     '''
@@ -52,13 +52,13 @@ class MYLUT: # my lut filter
 # define some vars
 # arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/C0102.MP4')
+parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/2160p.MOV')
 parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out2.mov')
 parser.add_argument("-lut", "--lutpath", type = str, default = defaultlutpath)
-parser.add_argument("-height", "--perferheight", type = int, default = 1080)
+parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
-parser.add_argument("-x264", "--encode264", type = int, default = 0)
-parser.add_argument("-interlaced", "--interlaced", type = int, default = 1)
+parser.add_argument("-x264", "--encode264", type = int, default = 1)
+parser.add_argument("-interlaced", "--interlaced", type = int, default = 0)
 userArgs = vars(parser.parse_args())
 # lut
 lut = MYLUT(lutpath=userArgs['lutpath'])
@@ -178,6 +178,7 @@ def progressVideo(src, output, encodewith264, framepersecond, interlaced, perfer
 def progressImage(src, output = 'out.jpg'):
     print("Progressing")
     img = cv2.imread(src)
+    img = cv2.resize(img, (600, 400))
     vhs = handleImage(img)
     cv2.imshow('output', vhs)
     cv2.waitKey(0)
@@ -185,8 +186,8 @@ def progressImage(src, output = 'out.jpg'):
     print("Done")
 
 def testLut():
-    testimg = cv2.imread('/Users/zjj/Downloads/照片/ZJJ03460.JPG')
-    testimg = cv2.resize(testimg, (600, 400))
+    testimg = cv2.imread('/Users/zjj/Downloads/照片/IMG_0495.JPG')
+    # testimg = cv2.resize(testimg, (600, 400))
     fileinlutdir = os.listdir('lut')
     fileinlutdir = sorted(fileinlutdir)
     for filename in fileinlutdir:
@@ -194,17 +195,22 @@ def testLut():
             lutpath = 'lut/' + filename
             print('Init', time.time())
             lut = MYLUT(lutpath)
-            print('Start', time.time())
-            img = lut.imageInLut(testimg)
-            print('Finish', time.time())
-            cv2.imshow(filename, img)
-            cv2.waitKey(0)
-            cv2.destroyWindow(filename)
+            img = testimg.copy()
+            for i in range(1):
+                print('Start', time.time())
+                img = lut.imageInLut(img)
+                print('Finish', time.time())
+                windowname = filename + str(i)
+                cv2.namedWindow(windowname, cv2.WINDOW_KEEPRATIO)
+                cv2.resizeWindow(windowname, 1080, 1920)
+                cv2.imshow(windowname, img)
+                cv2.waitKey(0)
+                cv2.destroyWindow(windowname)
     print("Done")
 
 if __name__ == "__main__":
     # testLut()
     # exit()
-    progressImage('test.jpg')
-    exit()
+    # progressImage('test.jpg')
+    # exit()
     progressVideo(userArgs["input"], output = userArgs["output"], encodewith264 = userArgs["encode264"], perferheight = userArgs["perferheight"], framepersecond = userArgs["framepersecond"], interlaced = userArgs["interlaced"])
