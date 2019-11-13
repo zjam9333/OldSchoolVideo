@@ -1,5 +1,4 @@
-# pyyy
-
+# coding:utf-8
 from cv2 import cv2
 import numpy as np
 import os
@@ -67,7 +66,7 @@ sharpkernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
 # purple
 purplesize = 1
 # blur
-blursize = 5
+blursize = 3
 
 def USM(src):
     val = 2
@@ -79,8 +78,8 @@ def handleImage(src):
     copy = src.copy()
     '''
     # purple edge
-    channel = copy[:, :, 1]
-    channel[:-purplesize, :-purplesize] = channel[purplesize:, purplesize:]
+    # channel = copy[:, :, 1]
+    # channel[:-purplesize, :-purplesize] = channel[purplesize:, purplesize:]
 
     # blur
     copy = cv2.GaussianBlur(copy, (blursize, blursize), 0)
