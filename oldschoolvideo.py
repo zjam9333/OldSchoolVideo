@@ -55,7 +55,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/2160p.MOV')
 parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out2.mov')
 parser.add_argument("-lut", "--lutpath", type = str, default = defaultlutpath)
-parser.add_argument("-height", "--perferheight", type = int, default = 480)
+parser.add_argument("-height", "--perferheight", type = int, default = 240)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 1)
 parser.add_argument("-interlaced", "--interlaced", type = int, default = 0)
@@ -69,9 +69,15 @@ purplesize = 1
 # blur
 blursize = 5
 
+def USM(src):
+    val = 2
+    blur = cv2.GaussianBlur(src, (blursize, blursize), 3)
+    res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
+    return res
+
 def handleImage(src):
     copy = src.copy()
-
+    '''
     # purple edge
     channel = copy[:, :, 1]
     channel[:-purplesize, :-purplesize] = channel[purplesize:, purplesize:]
@@ -85,8 +91,31 @@ def handleImage(src):
     # colors 
     # lut
     copy = lut.imageInLut(copy)
-
+    '''
+    # copy = cv2.medianBlur(copy, 3)
+    # copy = cv2.bilateralFilter(copy, 3, 11, 11)
+    # copy = cv2.filter2D(copy, -1, sharpkernel)
+    copy = USM(copy)
+    copy = lut.imageInLut(copy)
     return copy
+'''
+    # vx ?
+    # make more yellow
+    B = copy[:, :, 0]
+    B[:, :] = B[:, :] * 0.9
+    # change Saturation
+    HSV = cv2.cvtColor(copy, cv2.COLOR_BGR2HSV)
+    S = HSV[:, :, 1]
+    S[:, :] = S[:, :] * 0.6
+    # make brighter
+    Vfloat = HSV[:, :, 2].astype(np.float)
+    Vfloat *= 1.3
+    Vfloat += 20
+    Vfloat[Vfloat > 255] = 255
+    HSV[:, :, 2] = Vfloat.reshape(S.shape)
+    copy = cv2.cvtColor(HSV, cv2.COLOR_HSV2BGR)
+'''
+    # return copy
 
 def progressVideo(src, output, encodewith264, framepersecond, interlaced, perferheight):
     if not os.path.exists(src):
@@ -178,7 +207,7 @@ def progressVideo(src, output, encodewith264, framepersecond, interlaced, perfer
 def progressImage(src, output = 'out.jpg'):
     print("Progressing")
     img = cv2.imread(src)
-    img = cv2.resize(img, (600, 400))
+    # img = cv2.resize(img, (320, 240))#, interpolation=cv2.INTER_AREA)
     vhs = handleImage(img)
     cv2.imshow('output', vhs)
     cv2.waitKey(0)
@@ -211,6 +240,6 @@ def testLut():
 if __name__ == "__main__":
     # testLut()
     # exit()
-    # progressImage('test.jpg')
+    # progressImage('lut/lookup_0_origin.png')#('/Users/zjj/Desktop/output_screenshot_13.11.2019.png')
     # exit()
     progressVideo(userArgs["input"], output = userArgs["output"], encodewith264 = userArgs["encode264"], perferheight = userArgs["perferheight"], framepersecond = userArgs["framepersecond"], interlaced = userArgs["interlaced"])
