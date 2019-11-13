@@ -1,13 +1,13 @@
-# 将视频转换为复古风格
+# 将视频转换为handycam画质
 
 ## by 健健
 
-## 需要opencv-python、ffmpeg
+## 需要的库
+opencv-python
+numpy
+tqdm
+
+## 需要的软件
+ffmpeg
 
 ## python oldschoolvideo.py -i input.mp4 -o output.mp4
-
-### input 
-![input image](test.jpg)
-
-### output
-![output lookup_0_demo](output2.jpg)
