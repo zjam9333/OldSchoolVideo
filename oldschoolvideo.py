@@ -9,10 +9,10 @@ from zzlut import MYLUT
 
 # define some vars
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/c0053.mp4')
-parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out4.mov')
-parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_kodak_5205_fuji_3510.png')
-parser.add_argument("-height", "--perferheight", type = int, default = 360)
+parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/照片/C0066.mp4')
+parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out5.mov')
+parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_old_1.png')
+parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 1)
 userArgs = vars(parser.parse_args())
@@ -22,14 +22,15 @@ lut = MYLUT(lutpath=userArgs['lutpath'])
 
 def USM(src):
     val = 3
-    blur = cv2.GaussianBlur(src, (5, 5), 3)
+    blur = cv2.GaussianBlur(src, (7, 7), 3)
     res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
     return res
 
 def handleImage(src):
     copy = src.copy()
+    copy = cv2.GaussianBlur(copy, (3, 3), 0)
     copy = USM(copy)
-    copy = lut.imageInLut(copy)
+    copy = lut.imageInLut(copy, 0.5)
     return copy
 '''
     # vx ? by code
@@ -124,6 +125,7 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
 def progressImage(src, output = 'out.jpg'):
     print("Progressing")
     img = cv2.imread(src)
+    img = cv2.resize(img, (480, 360))
     vhs = handleImage(img)
     cv2.imshow('output', vhs)
     cv2.waitKey(0)
@@ -131,6 +133,6 @@ def progressImage(src, output = 'out.jpg'):
     print("Done")
 
 if __name__ == "__main__":
-    # progressImage('lut/lookup_0_origin.png')#('/Users/zjj/Desktop/output_screenshot_13.11.2019.png')
+    # progressImage('/Users/zjj/Downloads/IMG_A942617EA720-1.jpeg')
     # exit()
     progressVideo(userArgs["input"], output = userArgs["output"], encodewith264 = userArgs["encode264"], perferheight = userArgs["perferheight"], framepersecond = userArgs["framepersecond"])

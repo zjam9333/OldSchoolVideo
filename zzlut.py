@@ -35,13 +35,13 @@ class MYLUT: # my lut filter
             i = i * cubescale
             for k in range(cubescale):
                 reshapelut[i + k] = cube256
-        self.lut = reshapelut
+        self.lut = reshapelut.astype(np.float)
 
-    def imageInLut(self, src):
+    def imageInLut(self, src, alpha = 1.0):
         if not self.loaded:
             return src
         arr = src.copy()
-        arr[:, :] = self.lut[arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]] # wow this runs much faster!!
+        arr[:, :] = alpha * self.lut[arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]] + (arr[:, :] * (1 - alpha)) # wow this runs much faster!!
         return arr
 
 
