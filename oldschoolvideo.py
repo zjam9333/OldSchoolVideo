@@ -9,8 +9,8 @@ from zzlut import MYLUT
 
 # define some vars
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/照片/C0066.mp4')
-parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out5.mov')
+parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/照片/c0053.mp4')
+parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out6.mov')
 parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_old_1.png')
 parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
@@ -31,6 +31,7 @@ def handleImage(src):
     copy = cv2.GaussianBlur(copy, (3, 3), 0)
     copy = USM(copy)
     copy = lut.imageInLut(copy, 0.5)
+    copy[0::2] = copy[1::2]
     return copy
 '''
     # vx ? by code
@@ -125,7 +126,7 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
 def progressImage(src, output = 'out.jpg'):
     print("Progressing")
     img = cv2.imread(src)
-    img = cv2.resize(img, (480, 360))
+    img = cv2.resize(img, (640, 480))
     vhs = handleImage(img)
     cv2.imshow('output', vhs)
     cv2.waitKey(0)
