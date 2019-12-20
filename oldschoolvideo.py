@@ -9,8 +9,8 @@ from zzlut import MYLUT
 
 # define some vars
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/IMG_0315.mov')
-parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test.out7.mov')
+parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/123 456 678.mp4')
+parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test. out7.mov')
 parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_old_1.png')
 parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
@@ -113,6 +113,9 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
 
     print('Remix audio and video')
     
+    # remove " " before express command
+    src = src.replace(" ", "\ ")
+    output = output.replace(" ", "\ ")
     # ffmpeg -i INPUT_Video -i INPUT_Audio -map 0:v -map 1:a -c:v copy -c:a copy output.mp4
     # ffmpegcommand = "ffmpeg -i {} -i {} -map 0:v -map 1:a -c:v {} -c:a copy {} {}".format(cacheVideoName, src, 'libx264' if encodewith264 else 'copy', '-r {}'.format(framepersecond) if (framepersecond > 0 and encodewith264) else '', output)
     ffmpegcommand = "ffmpeg -i {} -i {} -map 0:v -map 1:a {} {}".format(cacheVideoName, src, '-r {}'.format(framepersecond), output)
