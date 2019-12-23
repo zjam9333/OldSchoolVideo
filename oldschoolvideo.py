@@ -11,7 +11,7 @@ from zzlut import MYLUT
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/123 456 678.mp4')
 parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test. out7.mov')
-parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_old_1.png')
+parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_vx.png')
 parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 1)
@@ -30,7 +30,7 @@ def handleImage(src):
     copy = src.copy()
     copy = cv2.GaussianBlur(copy, (3, 3), 0)
     copy = USM(copy)
-    copy = lut.imageInLut(copy, 0.5)
+    copy = lut.imageInLut(copy, 1)
     copy[0::2] = copy[1::2]
     return copy
 '''
