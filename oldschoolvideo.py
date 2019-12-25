@@ -26,8 +26,16 @@ def USM(src):
     res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
     return res
 
+def purpleFringe(src, move = 1):
+    copy = src
+    cols = copy.shape[1]
+    toLeft = copy[:, :, 2]
+    toLeft[:, :cols - move] = toLeft[:, move:]
+    return copy
+
 def handleImage(src):
     copy = src.copy()
+    copy = purpleFringe(copy)
     copy = cv2.GaussianBlur(copy, (3, 3), 0)
     copy = USM(copy)
     copy = lut.imageInLut(copy, 1)
