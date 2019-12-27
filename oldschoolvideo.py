@@ -21,7 +21,7 @@ userArgs = vars(parser.parse_args())
 lut = MYLUT(lutpath=userArgs['lutpath'])
 
 def USM(src):
-    val = 3
+    val = 4
     blur = cv2.GaussianBlur(src, (7, 7), 3)
     res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
     return res
@@ -36,7 +36,7 @@ def purpleFringe(src, move = 1):
 def handleImage(src):
     copy = src.copy()
     copy = purpleFringe(copy)
-    copy = cv2.GaussianBlur(copy, (3, 3), 0)
+    copy = cv2.GaussianBlur(copy, (5, 5), 0)
     copy = USM(copy)
     copy = lut.imageInLut(copy, 1)
     copy[0::2] = copy[1::2]
