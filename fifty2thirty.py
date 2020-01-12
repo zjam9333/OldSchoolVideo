@@ -33,7 +33,7 @@ def progressVideo(src, output):
         else:
             break
     print("source total frame = ", srctotalframe)
-    targetfps = 30
+    targetfps = 29.97
     targettotalframe = float(srctotalframe) / float(sourcefps) * float(targetfps)
     targettotalframe = int(targettotalframe)
 
