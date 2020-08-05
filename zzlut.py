@@ -31,6 +31,14 @@ class MYLUT: # my lut filter
             cx = (i % cube64rows) * cube64size
             cy = (i / cube64rows) * cube64size
             cube64 = lut[cy:cy + cube64size, cx:cx + cube64size]
+            # some lut is jpg, which need to be fixed
+            # cube64[0] = cube64[1]
+            # cube64[cube64size - 1] = cube64[cube64size - 2]
+            # cube64[:, 0] = cube64[:, 1]
+            # cube64[:, cube64size - 1] = cube64[:, cube64size - 2]
+            cube62 = cube64[1: cube64size - 1, 1: cube64size - 1]
+            cube64 = cv2.resize(cube62, (cube64size, cube64size))
+
             cube256 = cv2.resize(cube64, (cube256size, cube256size))
             i = i * cubescale
             for k in range(cubescale):
@@ -46,7 +54,16 @@ class MYLUT: # my lut filter
 
 
 def testLut():
-    testimg = cv2.imread('/Users/zjj/Downloads/照片/IMG_0495.JPG')
+    testimg = cv2.imread('/Users/zjj/Desktop/IMG_3271.jpg')
+    lutpath = '/Users/zjj/Desktop/lookup_0_origin_2.png'
+
+    lut = MYLUT(lutpath)
+    img = testimg.copy()
+    img = lut.imageInLut(img)
+    cv2.imwrite('/Users/zjj/Desktop/IMG_3271_lut.jpg', img)
+    return 0
+    # testimg = cv2.imread('/Users/zjj/Downloads/照片/IMG_0495.JPG')\
+
     # testimg = cv2.resize(testimg, (600, 400))
     fileinlutdir = os.listdir('lut')
     fileinlutdir = sorted(fileinlutdir)

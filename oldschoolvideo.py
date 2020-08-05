@@ -9,9 +9,9 @@ from zzlut import MYLUT
 
 # define some vars
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/123 456 678.mp4')
-parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/test. out7.mov')
-parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_vx.png')
+parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/照片/c0053.mp4')
+parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/照片/c0053_old2.mp4')
+parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_oldschool.png')
 parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 1)
@@ -21,7 +21,7 @@ userArgs = vars(parser.parse_args())
 lut = MYLUT(lutpath=userArgs['lutpath'])
 
 def USM(src):
-    val = 4
+    val = 3
     blur = cv2.GaussianBlur(src, (7, 7), 3)
     res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
     return res
@@ -29,13 +29,13 @@ def USM(src):
 def purpleFringe(src, move = 1):
     copy = src
     cols = copy.shape[1]
-    toLeft = copy[:, :, 2]
+    toLeft = copy[:, :, 1]
     toLeft[:, :cols - move] = toLeft[:, move:]
     return copy
 
 def handleImage(src):
     copy = src.copy()
-    copy = purpleFringe(copy)
+    # copy = purpleFringe(copy)
     copy = cv2.GaussianBlur(copy, (5, 5), 0)
     copy = USM(copy)
     copy = lut.imageInLut(copy, 1)
@@ -106,6 +106,7 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
         ret, frame = cap.read()
         if ret == False:
             break
+        # frame = purpleFringe(frame, 2)
         frame = cv2.resize(frame, videosize)
         # crop frame into storesize
         if shouldCropCols > 0:
