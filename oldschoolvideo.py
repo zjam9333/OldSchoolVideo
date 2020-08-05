@@ -6,12 +6,13 @@ import time
 import argparse
 from tqdm import tqdm
 from zzlut import MYLUT 
+import videoaudiomix
 
 # define some vars
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type = str, default = '/Users/zjj/Downloads/照片/c0053.mp4')
-parser.add_argument("-o", "--output", type = str, default = '/Users/zjj/Downloads/照片/c0053_old2.mp4')
-parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_oldschool.png')
+parser.add_argument("-i", "--input", type = str, default = '/Users/jam/Desktop/test.mp4')
+parser.add_argument("-o", "--output", type = str, default = '/Users/jam/Desktop/test_out.MP4')
+parser.add_argument("-lut", "--lutpath", type = str, default = 'lut/lookup_vx.png')
 parser.add_argument("-height", "--perferheight", type = int, default = 480)
 parser.add_argument("-fps", "--framepersecond", type = int, default = 30)
 parser.add_argument("-x264", "--encode264", type = int, default = 1)
@@ -23,6 +24,8 @@ lut = MYLUT(lutpath=userArgs['lutpath'])
 def USM(src):
     val = 3
     blur = cv2.GaussianBlur(src, (7, 7), 3)
+    val = 4
+    blur = cv2.GaussianBlur(src, (5, 5), 0)
     res = cv2.addWeighted(src, val, blur, 1.0 - val, 0)
     return res
 
@@ -95,7 +98,7 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
     cacheNameSuffix = time.strftime('%Y%m%d_%H%M%S')
     cacheVideoName = "{}_{}.mp4".format(cacheNamePrefix, cacheNameSuffix)
 
-    videocoder = cv2.VideoWriter_fourcc(*'mp4v')
+    videocoder = cv2.VideoWriter_fourcc(*'avc1')
     videowriter = cv2.VideoWriter(cacheVideoName, videocoder, fps, storesize)
     if videowriter.isOpened() == False:
         print('Fail to open video writer')
@@ -119,17 +122,10 @@ def progressVideo(src, output, encodewith264, framepersecond, perferheight):
     cap.release()
     videowriter.release()
     print('Finish progress')
-
-    print('Remix audio and video')
     
-    # remove " " before express command
-    src = src.replace(" ", "\ ")
-    output = output.replace(" ", "\ ")
-    # ffmpeg -i INPUT_Video -i INPUT_Audio -map 0:v -map 1:a -c:v copy -c:a copy output.mp4
-    # ffmpegcommand = "ffmpeg -i {} -i {} -map 0:v -map 1:a -c:v {} -c:a copy {} {}".format(cacheVideoName, src, 'libx264' if encodewith264 else 'copy', '-r {}'.format(framepersecond) if (framepersecond > 0 and encodewith264) else '', output)
-    ffmpegcommand = "ffmpeg -i {} -i {} -map 0:v -map 1:a {} {}".format(cacheVideoName, src, '-r {}'.format(framepersecond), output)
-    print('FFMpeg command: {}'.format(ffmpegcommand))
-    os.system(ffmpegcommand)
+    # mix video and audio
+    videoaudiomix.mixVideoAudio(cacheVideoName, src, output, fps=framepersecond)
+    
     print("Cleaning cache")
     os.system("rm -rf {}*".format(cacheNamePrefix))
 
